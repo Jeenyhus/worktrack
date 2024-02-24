@@ -1,10 +1,11 @@
+{% load bootstrap4 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}WorkTrack{% endblock %}</title>
-    <!-- Add any common CSS or Bootstrap links here -->
+    {% bootstrap_css %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -18,7 +19,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Home</a>
                     </li>
-                    <!-- Add other navigation links as needed -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'invoice' %}">Invoice</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'time_sheet' %}">Timesheet</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -29,6 +35,6 @@
         {% endblock %}
     </div>
 
-    <!-- Add any common JavaScript links here -->
+    {% bootstrap_javascript %}
 </body>
 </html>

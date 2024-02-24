@@ -25,7 +25,7 @@ class FranchisorForm(ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['name', 'franchisor', 'description', 'date', 'start_time', 'end_time', 'duration', 'billable', 'billed', 'invoice']
+        fields = ['name', 'franchisor', 'description', 'date', 'start_time', 'end_time', 'billable', 'billed', 'invoice']
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
             'franchisor': Select(attrs={'class': 'form-control'}),
@@ -33,10 +33,9 @@ class TaskForm(forms.ModelForm):
             'date': DateInput(attrs={'class': 'form-control'}),
             'start_time': TimeInput(attrs={'class': 'form-control'}),
             'end_time': TimeInput(attrs={'class': 'form-control'}),
-            'billable': CheckboxInput(attrs={'class': 'form-control'}),
-            'billed': CheckboxInput(attrs={'class': 'form-control'}),
+            'billable': CheckboxInput(attrs={'class': 'form-check-input'}),
+            'billed': CheckboxInput(attrs={'class': 'form-check-input'}),
             'invoice': Select(attrs={'class': 'form-control'}),
-            # Removed 'duration' field since DurationField doesn't have a widget
         }
 
 class FranchiseeForm(forms.ModelForm):
@@ -46,7 +45,7 @@ class FranchiseeForm(forms.ModelForm):
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
             'email': TextInput(attrs={'class': 'form-control'}),
-            'hourly_rate': TextInput(attrs={'class': 'form-control'}),  # Changed to TextInput
+            'hourly_rate': TextInput(attrs={'class': 'form-control'}),
             'career': Select(attrs={'class': 'form-control'}),
             'franchisor': Select(attrs={'class': 'form-control'}),
         }

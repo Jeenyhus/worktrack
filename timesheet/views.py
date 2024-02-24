@@ -7,10 +7,15 @@ def home(request):
     return render(request, 'home.html')
 
 def time_sheet(request):
-    # Retrieve all time sheet entries from the database
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('time_sheet')
+    else:
+        form = TaskForm()
     time_sheet_entries = TimeSheetEntry.objects.all()
-    # Render the template with time sheet entries
-    return render(request, 'time_sheet.html', {'time_sheet_entries': time_sheet_entries})
+    return render(request, 'time_sheet.html', {'form': form, 'time_sheet_entries': time_sheet_entries})
 
 def invoice(request):
     # Retrieve all invoices from the database

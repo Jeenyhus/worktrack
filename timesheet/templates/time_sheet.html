@@ -1,16 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Sheet</title>
-</head>
-<body>
-    <h1>Time Sheet Entries</h1>
+{% extends 'base.html' %}
+{% block title %}Time Sheet{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Time Sheet Entries</h1>
+    <form method="POST" class="mt-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Time Sheet Entry</button>
+    </form>
+    <hr>
+    <h2>Existing Time Sheet Entries</h2>
     <ul>
         {% for entry in time_sheet_entries %}
             <li>{{ entry }}</li>
         {% endfor %}
     </ul>
-</body>
-</html>
+</div>
+{% endblock %}
