@@ -1,8 +1,8 @@
-from models import Career, Franchisor, Task, Franchisee, Invoice, INVOICE_CHOICES
 from django import forms
-from django.forms import ModelForm, DateInput, TimeInput, Select, TextInput, Textarea, CheckboxInput, DurationField
+from django.forms import ModelForm, DateInput, TimeInput, Select, TextInput, Textarea, CheckboxInput
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from .models import Career, Franchisor, Task, Franchisee, Invoice, INVOICE_CHOICES
 
 class CareerForm(ModelForm):
     class Meta:
@@ -22,7 +22,7 @@ class FranchisorForm(ModelForm):
             'category': Select(attrs={'class': 'form-control'})
         }
     
-class TaskForm(ModelForm):
+class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['name', 'franchisor', 'description', 'date', 'start_time', 'end_time', 'duration', 'billable', 'billed', 'invoice']
@@ -33,38 +33,38 @@ class TaskForm(ModelForm):
             'date': DateInput(attrs={'class': 'form-control'}),
             'start_time': TimeInput(attrs={'class': 'form-control'}),
             'end_time': TimeInput(attrs={'class': 'form-control'}),
-            'duration': DurationField(attrs={'class': 'form-control'}),
             'billable': CheckboxInput(attrs={'class': 'form-control'}),
             'billed': CheckboxInput(attrs={'class': 'form-control'}),
-            'invoice': Select(attrs={'class': 'form-control'})
+            'invoice': Select(attrs={'class': 'form-control'}),
+            # Removed 'duration' field since DurationField doesn't have a widget
         }
 
-class FranchiseeForm(ModelForm):
+class FranchiseeForm(forms.ModelForm):
     class Meta:
         model = Franchisee
-        fields = ['name', 'email', 'description', 'category']
+        fields = ['name', 'email', 'hourly_rate', 'career', 'franchisor']
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
             'email': TextInput(attrs={'class': 'form-control'}),
-            'description': Textarea(attrs={'class': 'form-control'}),
-            'category': Select(attrs={'class': 'form-control'})
+            'hourly_rate': TextInput(attrs={'class': 'form-control'}),  # Changed to TextInput
+            'career': Select(attrs={'class': 'form-control'}),
+            'franchisor': Select(attrs={'class': 'form-control'}),
         }
 
 class InvoiceForm(ModelForm):
     class Meta:
         model = Invoice
-        fields = ['name', 'franchisee', 'description', 'date', 'start_time', 'end_time', 'duration', 'billable', 'billed', 'invoice']
+        fields = ['franchisee', 'invoice_number', 'invoice_date', 'description_of_services', 'hours_worked', 'rate', 'other_expenses', 'amount_payable', 'payment_instructions']
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control'}),
             'franchisee': Select(attrs={'class': 'form-control'}),
-            'description': Textarea(attrs={'class': 'form-control'}),
-            'date': DateInput(attrs={'class': 'form-control'}),
-            'start_time': TimeInput(attrs={'class': 'form-control'}),
-            'end_time': TimeInput(attrs={'class': 'form-control'}),
-            'duration': DurationField(attrs={'class': 'form-control'}),
-            'billable': CheckboxInput(attrs={'class': 'form-control'}),
-            'billed': CheckboxInput(attrs={'class': 'form-control'}),
-            'invoice': Select(attrs={'class': 'form-control'})
+            'invoice_number': TextInput(attrs={'class': 'form-control'}),
+            'invoice_date': DateInput(attrs={'class': 'form-control'}),
+            'description_of_services': Textarea(attrs={'class': 'form-control'}),
+            'hours_worked': TextInput(attrs={'class': 'form-control'}),
+            'rate': TextInput(attrs={'class': 'form-control'}),
+            'other_expenses': TextInput(attrs={'class': 'form-control'}),
+            'amount_payable': TextInput(attrs={'class': 'form-control'}),
+            'payment_instructions': Textarea(attrs={'class': 'form-control'}),
         }
 
 class CreateUserForm(UserCreationForm):

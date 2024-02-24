@@ -1,68 +1,87 @@
-from rest_framework import viewsets
-from rest_framework.response import Response
-from .models import Career, Franchisor, Task, Franchisee, Invoice
-from .serializers import CareerSerializer, FranchisorSerializer, TaskSerializer, FranchiseeSerializer, InvoiceSerializer
-from rest_framework.views import APIView, Response
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from .models import TimeSheetEntry, Invoice, Career, Franchisor, Task, Franchisee, INVOICE_CHOICES
+from .forms import TaskForm, FranchiseeForm, InvoiceForm
 
+def home(request):
+    return render(request, 'home.html')
 
-class LoginView(APIView):
-    '''
-    API endpoint that allows users to login.
+def time_sheet(request):
+    # Retrieve all time sheet entries from the database
+    time_sheet_entries = TimeSheetEntry.objects.all()
+    # Render the template with time sheet entries
+    return render(request, 'time_sheet.html', {'time_sheet_entries': time_sheet_entries})
+
+def invoice(request):
+    # Retrieve all invoices from the database
+    invoices = Invoice.objects.all()
+    # Render the template with invoices
+    return render(request, 'invoice.html', {'invoices': invoices})
+
+def generate_invoice(request, time_sheet_entry_id):
+    # Retrieve the time sheet entry based on the provided ID
+    time_sheet_entry = get_object_or_404(TimeSheetEntry, pk=time_sheet_entry_id)
     
-    This view is used to authenticate users and return a token.
-    
-    The token is used to authenticate the user in subsequent requests.
-    
-    The token is returned in the response body.'''
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    # Perform operations to generate an invoice based on the time sheet entry
+    total_hours_worked = time_sheet_entry.duration.total_seconds() / 3600  # Convert duration to hours
+    rate_per_hour = time_sheet_entry.franchisee.hourly_rate
+    amount_payable = total_hours_worked * rate_per_hour
 
-    def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
+    # Create an Invoice object
+    invoice = Invoice(
+        franchisee=time_sheet_entry.franchisee,
+        invoice_number='',  # You may generate or assign an invoice number here
+        invoice_date=time_sheet_entry.date,
+        description_of_services=time_sheet_entry.task.description,
+        hours_worked=time_sheet_entry.duration,
+        rate=rate_per_hour,
+        other_expenses=0,  # Update if there are other expenses
+        amount_payable=amount_payable,
+        payment_instructions='Please pay within 30 days.',  # Example payment instructions
+    )
 
-        user = authenticate(username=username, password=password)
-        if user:
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
-        else:
-            return Response({'error': 'Invalid credentials'}, status=400)
+    # Save the invoice to the database
+    invoice.save()
 
-class CareerViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows careers to be viewed or edited.
-    """
-    queryset = Career.objects.all()
-    serializer_class = CareerSerializer
+    # Optionally, you can update the time sheet entry to mark it as invoiced
+    time_sheet_entry.invoiced = True
+    time_sheet_entry.save()
 
-class FranchisorViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows franchisors to be viewed or edited.
-    """
-    queryset = Franchisor.objects.all()
-    serializer_class = FranchisorSerializer
+    # Redirect to the invoice detail page
+    return redirect('invoice_detail', invoice_id=invoice.pk)
 
-class TaskViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows tasks to be viewed or edited.
-    """
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+def invoice_detail(request, invoice_id):
+    # Retrieve the invoice based on the provided ID
+    invoice = get_object_or_404(Invoice, pk=invoice_id)
+    # Render the template with the invoice details
+    return render(request, 'invoice_detail.html', {'invoice': invoice})
 
-class FranchiseeViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows franchisees to be viewed or edited.
-    """
-    queryset = Franchisee.objects.all()
-    serializer_class = FranchiseeSerializer
+def create_task(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('time_sheet')
+    else:
+        form = TaskForm()
+    return render(request, 'create_task.html', {'form': form})
 
-class InvoiceViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows invoices to be viewed or edited.
-    """
-    queryset = Invoice.objects.all()
-    serializer_class = InvoiceSerializer
+def create_franchisee(request):
+    if request.method == 'POST':
+        form = FranchiseeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('time_sheet')
+    else:
+        form = FranchiseeForm()
+    return render(request, 'create_franchisee.html', {'form': form})
+
+def create_invoice(request):
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('invoice')
+    else:
+        form = InvoiceForm()
+    return render(request, 'create_invoice.html', {'form': form})

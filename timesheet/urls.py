@@ -1,12 +1,10 @@
 from django.urls import path
-from rest_framework.routers import DefaultRouter
-from .views import CareerViewSet, FranchisorViewSet, TaskViewSet, FranchiseeViewSet, InvoiceViewSet
+from . import views
 
-router = DefaultRouter()
-router.register(r'careers', CareerViewSet)
-router.register(r'franchisors', FranchisorViewSet)
-router.register(r'tasks', TaskViewSet)
-router.register(r'franchisees', FranchiseeViewSet)
-router.register(r'invoices', InvoiceViewSet)
-
-urlpatterns = router.urls
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('time-sheet/', views.time_sheet, name='time_sheet'),
+    path('invoice/', views.invoice, name='invoice'),
+    path('generate-invoice/<int:time_sheet_entry_id>/', views.generate_invoice, name='generate_invoice'),
+    path('invoice/<int:invoice_id>/', views.invoice_detail, name='invoice_detail'),
+]
