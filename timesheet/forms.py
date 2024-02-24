@@ -27,13 +27,13 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ['name', 'franchisor', 'description', 'date', 'start_time', 'end_time', 'billable', 'billed', 'invoice']
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control'}),
-            'franchisor': Select(attrs={'class': 'form-control'}),
-            'description': Textarea(attrs={'class': 'form-control'}),
-            'date': DateInput(attrs={'class': 'form-control'}),
-            'start_time': TimeInput(attrs={'class': 'form-control'}),
-            'end_time': TimeInput(attrs={'class': 'form-control'}),
-            'billable': CheckboxInput(attrs={'class': 'form-check-input'}),
+            'name': TextInput(attrs={'class': 'form-control', 'id': 'validationCustom01', 'placeholder': 'Task Name', 'required': True}),
+            'franchisor': Select(attrs={'class': 'form-control', 'id': 'validationCustom02', 'required': True}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Task Description', 'required': True}),
+            'date': DateInput(attrs={'class': 'form-control', 'id': 'validationCustom03', 'placeholder': 'Task Date', 'required': True}),
+            'start_time': TimeInput(attrs={'class': 'form-control', 'id': 'validationCustom04', 'placeholder': 'Start Time', 'required': True}),
+            'end_time': TimeInput(attrs={'class': 'form-control', 'id': 'validationCustom05', 'placeholder': 'End Time', 'required': True}),
+            'billable': CheckboxInput(attrs={'class': 'form-check-input', 'id': 'invalidCheck', 'required': True}),
             'billed': CheckboxInput(attrs={'class': 'form-check-input'}),
             'invoice': Select(attrs={'class': 'form-control'}),
         }
